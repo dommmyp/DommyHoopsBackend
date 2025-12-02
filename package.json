@@ -1,0 +1,20 @@
+{
+  "name": "dommyhoops",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "duckdb": "^1.4.1",
+    "express": "^4.21.2",
+    "openai": "^6.9.0",
+    "shotchart.d3.ts": "^0.1.34"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
