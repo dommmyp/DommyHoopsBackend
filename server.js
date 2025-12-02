@@ -19,7 +19,8 @@ import agentRouter from "./ai/agentRouter.js";
 
 
 // --- CONFIG ---
-const SRC_DB = "/Users/dominicparolin/Code/dommyhoops/backend/cbb_data.duckdb"
+const SRC_DB = process.env.SRC_DB || "../cbb_data.duckdb";
+
 const PORT = process.env.PORT || 4000
 
 if (!fs.existsSync(SRC_DB)) {

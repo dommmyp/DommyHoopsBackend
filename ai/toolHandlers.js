@@ -10,7 +10,7 @@ const duckdb = require("duckdb");
 // ------------------------
 const SRC_DB =
   process.env.SRC_DB ||
-  "/Users/dominicparolin/Code/dommyhoops/backend/cbb_data.duckdb";
+  "/Users/dominicparolin/Code/dommyhoops/cbb_data.duckdb";
 
 const db = new duckdb.Database(SRC_DB, duckdb.OPEN_READONLY);
 const conn = db.connect();
@@ -59,7 +59,7 @@ function qAll(sql, params = []) {
 
 async function get_team_overview({ team }) {
   const sql = `
-    SELECT * FROM team_rankings_adj_2025
+    SELECT * FROM team_rankings_iter_2025
     WHERE LOWER(team) = LOWER($1) LIMIT 1
   `;
   const rows = await qAll(sql, [team]);
@@ -133,7 +133,7 @@ async function get_team_record_vs_ranked({ team }) {
       g.startdate, g.hometeam, g.awayteam, g.homepoints, g.awaypoints,
       r.rank as opponent_rank
     FROM games_flat_2025 g
-    JOIN team_rankings_adj_2025 r 
+    JOIN team_rankings_iter_2025 r 
       ON (LOWER(r.team) = LOWER(g.hometeam) OR LOWER(r.team) = LOWER(g.awayteam))
     WHERE (LOWER(g.hometeam) = LOWER($1) OR LOWER(g.awayteam) = LOWER($1))
       AND LOWER(r.team) != LOWER($1)
@@ -285,7 +285,7 @@ async function get_daily_top_performers({ date, stat = 'points' }) {
 // ------------------------
 
 async function get_team_rankings({ limit = 25 }) {
-  const sql = `SELECT * FROM team_rankings_adj_2025 ORDER BY rank ASC LIMIT $1`;
+  const sql = `SELECT * FROM team_rankings_iter_2025 ORDER BY rank ASC LIMIT $1`;
   const rows = await qAll(sql, [limit]);
   return { rankings: rows };
 }
@@ -293,7 +293,7 @@ async function get_team_rankings({ limit = 25 }) {
 async function get_conference_standings({ conference }) {
   const sql = `
     SELECT rank, team, conf, record_overall, adj_o, adj_d 
-    FROM team_rankings_adj_2025
+    FROM team_rankings_iter_2025
     WHERE LOWER(conf) = LOWER($1)
     ORDER BY rank ASC
   `;
@@ -332,7 +332,7 @@ async function get_team_stat_leaders({ stat_category, limit = 10 }) {
   
   const sql = `
     SELECT team, ${col} as value 
-    FROM team_rankings_adj_2025
+    FROM team_rankings_iter_2025
     ORDER BY ${col} ${stat_category === 'adjd' || stat_category === 'opp_ppg' ? 'ASC' : 'DESC'}
     LIMIT $1
   `;
@@ -351,8 +351,8 @@ async function get_biggest_upsets({ limit = 5 }) {
         ELSE r_away.rank - r_home.rank
       END as upset_magnitude
     FROM games_flat_2025 g
-    JOIN team_rankings_adj_2025 r_home ON LOWER(g.hometeam) = LOWER(r_home.team)
-    JOIN team_rankings_adj_2025 r_away ON LOWER(g.awayteam) = LOWER(r_away.team)
+    JOIN team_rankings_iter_2025 r_home ON LOWER(g.hometeam) = LOWER(r_home.team)
+    JOIN team_rankings_iter_2025 r_away ON LOWER(g.awayteam) = LOWER(r_away.team)
     WHERE g.status = 'Final'
     ORDER BY upset_magnitude DESC
     LIMIT $1
@@ -364,7 +364,7 @@ async function get_biggest_upsets({ limit = 5 }) {
 async function get_bubble_teams() {
   const sql = `
     SELECT rank, team, conf, record_overall 
-    FROM team_rankings_adj_2025 
+    FROM team_rankings_iter_2025 
     WHERE rank BETWEEN 40 AND 60 
     ORDER BY rank ASC
   `;
