@@ -19,13 +19,12 @@ import agentRouter from "./ai/agentRouter.js";
 
 
 // --- CONFIG ---
-const SRC_DB = process.env.SRC_DB || "../cbb_data.duckdb";
+const src_db = process.env.src_db || "../cbb_data.duckdb";
 
 const PORT = process.env.PORT || 4000
 
 if (!fs.existsSync(SRC_DB)) {
   console.error(`[fatal] DB not found at ${SRC_DB}`)
-  process.exit(1)
 }
 
 // Helper to convert BigInt to Number in objects
